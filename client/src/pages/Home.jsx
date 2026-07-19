@@ -2,7 +2,7 @@ import { setRemotePeer, getRemotePeer } from "../webRTC/session";
 import { getPeer } from "../webRTC/peer";
 import { useEffect, useState } from "react";
 import { socket } from "/src/socket/socket.js";
-import axios from "axios";
+import api from "../api/axios.js";
 import { API_URL } from "../config.js";
 import { createPeer } from "../webRTC/peer";
 import { createAnswer, createOffer, setRemoteAnswer } from "../webRTC/signaling";
@@ -46,7 +46,7 @@ export default function Home() {
 
     async function fetchContacts() {
         try {
-            const res = await axios.get(API_URL + "/user/contacts", {
+            const res = await api.get(API_URL + "/user/contacts", {
                 withCredentials: true
             });
             setContacts(res.data.contacts || []);
@@ -60,7 +60,7 @@ export default function Home() {
         async function init() {
             console.log("1. Calling /me");
 
-            const res = await axios.get(
+            const res = await api.get(
                 API_URL + "/user/me",
                 { withCredentials: true }
             );
@@ -115,7 +115,7 @@ export default function Home() {
 
         const timeout = setTimeout(async () => {
             try {
-                const res = await axios.get(
+                const res = await api.get(
                     `${API_URL}/user/search?q=${encodeURIComponent(q)}`,
                     { withCredentials: true }
                 );

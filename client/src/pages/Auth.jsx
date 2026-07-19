@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axios.js";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config.js";
 
@@ -42,11 +42,12 @@ export default function Auth() {
 
         try {
 
-            await axios.post(
+            await api.post(
                 `${API_URL}/user/${isSignup ? "register" : "login"}`,
                 { username: username.trim(), password },
                 { withCredentials: true }
             );
+            localStorage.setItem("token", res.data.token);
 
             navigate("/home");
 
