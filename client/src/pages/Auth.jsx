@@ -47,7 +47,9 @@ export default function Auth() {
                 { username: username.trim(), password },
                 { withCredentials: true }
             );
-            localStorage.setItem("token", res.data.token);
+            if (res.data.token) {
+    localStorage.setItem("token", res.data.token);
+}
 
             navigate("/home");
 
