@@ -1,7 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 const { User } = require("../models/userModel");
 const { Contact } = require("../models/contactModel");
 const Auth = require("../middleware/Auth");
