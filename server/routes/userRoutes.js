@@ -1,19 +1,12 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const { User } = require("../models/userModel");
 const { Contact } = require("../models/contactModel");
 const Auth = require("../middleware/Auth");
 
 const router = express.Router();
-
-const isProduction = process.env.NODE_ENV === "production";
-
-const cookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax"
-};
 
 
 // ===============================
@@ -58,13 +51,9 @@ router.post("/register", async (req, res) => {
             }
         );
 
-        res.cookie("token", token, {
-            ...cookieOptions,
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
         return res.status(201).json({
             message: "Registration successful",
+            token,
             user: {
                 id: user._id,
                 username: user.username
@@ -128,16 +117,14 @@ router.post("/login", async (req, res) => {
             }
         );
 
-       res.cookie("token", token, {
-    ...cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000
-});
-
-res.status(200).json({
-    message: "Login successful",
-    token, // ① send token in response body
-    user: { id: user._id, name: user.name, email: user.email }
-});
+        return res.status(200).json({
+            message: "Login successful",
+            token,
+            user: {
+                id: user._id,
+                username: user.username
+            }
+        });
 
     } catch (err) {
 
@@ -240,8 +227,6 @@ router.get("/contacts", Auth, async (req, res) => {
 // ===============================
 
 router.post("/logout", (req, res) => {
-
-    res.clearCookie("token", cookieOptions);
 
     return res.status(200).json({
         message: "Logged out successfully"

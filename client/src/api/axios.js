@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_URL } from "../config.js";
 
-const api = axios.create({                                             // ← fixed: axios.create, not api.create
-    baseURL: import.meta.env.VITE_API_URL, // or process.env.REACT_APP_API_URL
+const api = axios.create({
+    baseURL: API_URL
 });
 
 api.interceptors.request.use((config) => {

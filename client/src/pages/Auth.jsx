@@ -48,8 +48,8 @@ export default function Auth() {
                 { withCredentials: true }
             );
             if (res.data.token) {
-    localStorage.setItem("token", res.data.token);
-}
+                localStorage.setItem("token", res.data.token);
+            }
 
             navigate("/home");
 

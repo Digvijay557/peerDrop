@@ -5,7 +5,6 @@ const { Server } = require("socket.io");
 const http = require("http");
 const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
 const PORT = process.env.PORT || 3000;
@@ -30,7 +29,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
