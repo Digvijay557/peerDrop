@@ -42,7 +42,7 @@ export default function Auth() {
 
         try {
 
-            await api.post(
+            const res = await api.post(
                 `${API_URL}/user/${isSignup ? "register" : "login"}`,
                 { username: username.trim(), password },
                 { withCredentials: true }
