@@ -8,7 +8,10 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
-const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const clientUrls = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173")
+    .split(",")
+    .map((url) => url.trim().replace(/\/$/, ""))
+    .filter(Boolean);
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGODB_URI;
 
@@ -17,7 +20,7 @@ if (!mongoUri) {
 }
 
 app.use(cors({
-    origin: clientUrl,
+    origin: clientUrls,
     credentials: true
 }));
 
@@ -26,7 +29,7 @@ app.use(cookieParser());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: clientUrl,
+        origin: clientUrls,
         credentials: true
     }
 });
