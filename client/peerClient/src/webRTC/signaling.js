@@ -1,4 +1,4 @@
-import { getPeer } from "./peer";
+import { flushRemoteIceCandidates, getPeer } from "./peer";
 
 export async function createOffer() {
 
@@ -25,6 +25,7 @@ export async function createAnswer(offer) {
     const peer = getPeer();
 
     await peer.setRemoteDescription(offer);
+    await flushRemoteIceCandidates();
 
     const answer = await peer.createAnswer();
 
@@ -40,6 +41,7 @@ export async function setRemoteAnswer(answer) {
     const peer = getPeer();
 
     await peer.setRemoteDescription(answer);
+    await flushRemoteIceCandidates();
 
     console.log("Remote Answer Set");
 

@@ -1,5 +1,5 @@
 import { setRemotePeer, getRemotePeer } from "../webRTC/session";
-import { getPeer } from "../webRTC/peer";
+import { addRemoteIceCandidate } from "../webRTC/peer";
 import { useEffect, useState } from "react";
 import { socket } from "/src/socket/socket.js";
 import axios from "axios";
@@ -134,11 +134,7 @@ export default function Home() {
 
         socket.on("ice-candidate", async ({ candidate }) => {
 
-            const peer = getPeer();
-
-            if (!peer) return;
-
-            await peer.addIceCandidate(candidate);
+            await addRemoteIceCandidate(candidate);
 
             console.log("ICE Candidate Added");
 
@@ -388,7 +384,7 @@ export default function Home() {
                     offset + CHUNK_SIZE
                 );
 
-                sendMessage(chunk);
+                await sendMessage(chunk);
 
                 console.log(
                     `Sent ${offset + chunk.byteLength}/${buffer.byteLength}`
@@ -397,7 +393,7 @@ export default function Home() {
                 offset += CHUNK_SIZE;
 
             }
-            sendMessage(JSON.stringify({
+            await sendMessage(JSON.stringify({
                 type: "complete"
             }));
 

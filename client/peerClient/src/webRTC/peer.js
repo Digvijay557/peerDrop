@@ -4,6 +4,7 @@ let receivedChunks = [];
 let peer = null;
 let dataChannel = null;
 let currentMetadata = null;
+let pendingIceCandidates = [];
 
 let onMetadata = null;
 let onAccept = null;
@@ -117,6 +118,8 @@ export function createPeer(isInitiator = false) {
 
     });
 
+    pendingIceCandidates = [];
+
     // -----------------------
     // Initiator creates channel
     // -----------------------
@@ -216,19 +219,60 @@ export function sendMessage(message) {
     console.log("Channel:", dataChannel);
     console.log("State:", dataChannel?.readyState);
 
-    if (!dataChannel) {
-        console.log("No DataChannel");
+    return waitForDataChannel().then(() => {
+        if (dataChannel.bufferedAmount > 4 * 1024 * 1024) {
+            return new Promise((resolve) => {
+                const previousHandler = dataChannel.onbufferedamountlow;
+                dataChannel.onbufferedamountlow = () => {
+                    dataChannel.onbufferedamountlow = previousHandler;
+                    resolve(sendMessage(message));
+                };
+                dataChannel.bufferedAmountLowThreshold = 1024 * 1024;
+            });
+        }
+
+        dataChannel.send(message);
+        console.log("Sent Successfully");
+    });
+}
+
+function waitForDataChannel(timeout = 15000) {
+    if (dataChannel?.readyState === "open") return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+        const startedAt = Date.now();
+        const check = () => {
+            if (dataChannel?.readyState === "open") {
+                resolve();
+                return;
+            }
+            if (Date.now() - startedAt >= timeout) {
+                reject(new Error("The peer connection did not open."));
+                return;
+            }
+            window.setTimeout(check, 100);
+        };
+        check();
+    });
+}
+
+export async function addRemoteIceCandidate(candidate) {
+    if (!peer) return;
+
+    if (!peer.remoteDescription) {
+        pendingIceCandidates.push(candidate);
         return;
     }
 
-    if (dataChannel.readyState !== "open") {
-        console.log("Not Open");
-        return;
-    }
+    await peer.addIceCandidate(candidate);
+}
 
-    dataChannel.send(message);
+export async function flushRemoteIceCandidates() {
+    if (!peer?.remoteDescription || pendingIceCandidates.length === 0) return;
 
-    console.log("Sent Successfully");
+    const candidates = pendingIceCandidates;
+    pendingIceCandidates = [];
+    await Promise.all(candidates.map((candidate) => peer.addIceCandidate(candidate)));
 }
 
 // =======================
