@@ -10,6 +10,7 @@ export default function TopBar({
     onSearchChange,
     searchResults,
     searching,
+    searchError,
     onSelectResult,
     isContact,
     isOnline,
@@ -76,7 +77,7 @@ export default function TopBar({
 
                         {!searching && searchResults.length === 0 && (
                             <p className="px-3 py-3 text-center text-xs text-[var(--color-ink-faint)]">
-                                No users found
+                                {searchError || "No users found"}
                             </p>
                         )}
 

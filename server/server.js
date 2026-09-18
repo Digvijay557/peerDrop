@@ -14,13 +14,23 @@ const clientUrls = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http:/
     .filter(Boolean);
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGODB_URI;
+const vercelOrigin = /^https:\/\/([a-z0-9-]+\.)*vercel\.app$/i;
+
+function allowClientOrigin(origin, callback) {
+    if (!origin || clientUrls.includes(origin) || vercelOrigin.test(origin)) {
+        callback(null, origin || true);
+        return;
+    }
+
+    callback(new Error("Origin is not allowed by CORS"));
+}
 
 if (!mongoUri) {
     throw new Error("MONGODB_URI is not configured.");
 }
 
 app.use(cors({
-    origin: clientUrls,
+    origin: allowClientOrigin,
     credentials: true
 }));
 
@@ -29,7 +39,7 @@ app.use(cookieParser());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: clientUrls,
+        origin: allowClientOrigin,
         credentials: true
     }
 });

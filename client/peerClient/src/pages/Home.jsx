@@ -33,6 +33,7 @@ export default function Home() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [searching, setSearching] = useState(false);
+    const [searchError, setSearchError] = useState("");
 
     // userId -> live socket id, derived from the online-users broadcast
     const onlineUserIds = new Set(
@@ -107,11 +108,13 @@ export default function Home() {
 
         if (!q) {
             setSearchResults([]);
+            setSearchError("");
             setSearching(false);
             return;
         }
 
         setSearching(true);
+        setSearchError("");
 
         const timeout = setTimeout(async () => {
             try {
@@ -122,6 +125,8 @@ export default function Home() {
                 setSearchResults(res.data.users || []);
             } catch (err) {
                 console.log("Search failed:", err.message);
+                setSearchResults([]);
+                setSearchError(err.response?.data?.message || "Search is unavailable.");
             } finally {
                 setSearching(false);
             }
@@ -473,6 +478,7 @@ export default function Home() {
                     onSearchChange={setSearchQuery}
                     searchResults={searchResults.filter((u) => String(u.id) !== String(currentUserId))}
                     searching={searching}
+                    searchError={searchError}
                     onSelectResult={handleSearchSelect}
                     isContact={isContact}
                     isOnline={isOnline}
