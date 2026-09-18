@@ -8,8 +8,10 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: clientUrl,
     credentials: true
 }));
 
@@ -25,7 +27,7 @@ mongoose.connect("mongodb+srv://digvijaay55_db_user:Fg3lrLbf5RitqjC7@cluster0.0p
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: clientUrl,
         credentials: true
     }
 });

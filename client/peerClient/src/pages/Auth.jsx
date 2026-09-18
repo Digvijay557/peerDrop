@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 export default function Auth() {
 
@@ -42,7 +43,7 @@ export default function Auth() {
         try {
 
             await axios.post(
-                `http://localhost:3000/user/${isSignup ? "register" : "login"}`,
+                `${API_URL}/user/${isSignup ? "register" : "login"}`,
                 { username: username.trim(), password },
                 { withCredentials: true }
             );

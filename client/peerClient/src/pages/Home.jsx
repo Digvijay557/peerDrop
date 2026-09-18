@@ -8,6 +8,7 @@ import { createAnswer, createOffer, setRemoteAnswer } from "../webRTC/signaling"
 import { sendMessage } from "../webRTC/peer";
 import { setMetadataHandler } from "../webRTC/peer";
 import { setAcceptHandler } from "../webRTC/peer";
+import { API_URL } from "../config";
 
 import TopBar from "../components/TopBar";
 import ContactsPanel from "../components/Sidebar/ContactsPanel";
@@ -45,7 +46,7 @@ export default function Home() {
 
     async function fetchContacts() {
         try {
-            const res = await axios.get("http://localhost:3000/user/contacts", {
+            const res = await axios.get(`${API_URL}/user/contacts`, {
                 withCredentials: true
             });
             setContacts(res.data.contacts || []);
@@ -60,7 +61,7 @@ export default function Home() {
             console.log("1. Calling /me");
 
             const res = await axios.get(
-                "http://localhost:3000/user/me",
+                `${API_URL}/user/me`,
                 { withCredentials: true }
             );
 
@@ -115,7 +116,7 @@ export default function Home() {
         const timeout = setTimeout(async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:3000/user/search?q=${encodeURIComponent(q)}`,
+                    `${API_URL}/user/search?q=${encodeURIComponent(q)}`,
                     { withCredentials: true }
                 );
                 setSearchResults(res.data.users || []);
