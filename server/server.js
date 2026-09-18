@@ -1,7 +1,7 @@
 require("dotenv").config();
-const express = require("express")
+const express = require("express");
 const app = express();
-const {Server} = require("socket.io")
+const { Server } = require("socket.io");
 const http = require("http");
 const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
@@ -9,6 +9,12 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const port = process.env.PORT || 3000;
+const mongoUri = process.env.MONGODB_URI;
+
+if (!mongoUri) {
+    throw new Error("MONGODB_URI is not configured.");
+}
 
 app.use(cors({
     origin: clientUrl,
@@ -18,13 +24,6 @@ app.use(cors({
 app.use(cookieParser());
 
 const server = http.createServer(app);
-mongoose.connect("mongodb+srv://digvijaay55_db_user:Fg3lrLbf5RitqjC7@cluster0.0phl3ja.mongodb.net/?appName=Cluster0").then(()=>{
-    console.log("MongoDB connected");
-}
-)
-
-
-
 const io = new Server(server, {
     cors: {
         origin: clientUrl,
@@ -38,7 +37,14 @@ app.use(express.json());
 
 app.use("/user", userRoutes);
 
-
-server.listen(3000, ()=>{
-    console.log("Listening to port 3K")
-})
+mongoose.connect(mongoUri)
+    .then(() => {
+        console.log("MongoDB connected");
+        server.listen(port, () => {
+            console.log(`Listening on port ${port}`);
+        });
+    })
+    .catch((error) => {
+        console.error("MongoDB connection failed:", error.message);
+        process.exit(1);
+    });
