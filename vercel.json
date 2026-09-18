@@ -1,7 +1,7 @@
 {
-  "installCommand": "npm install --prefix client/peerClient",
-  "buildCommand": "npm run build --prefix client/peerClient",
-  "outputDirectory": "client/peerClient/dist",
+  "installCommand": "npm install --prefix peerClient",
+  "buildCommand": "npm run build --prefix peerClient",
+  "outputDirectory": "peerClient/dist",
   "rewrites": [
     {
       "source": "/(.*)",
